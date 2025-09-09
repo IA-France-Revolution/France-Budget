@@ -1,6 +1,6 @@
 /** ===========================================================
- *  ENHANCED APPLICATION LOGIC V3 - Developer Guru Edition
- *  (Fixed and Optimized)
+ *  ENHANCED APPLICATION LOGIC V4 - SEO & Share Edition
+ *  (Complete with sharing functionality and GitHub integration)
  *  =========================================================== */
 
 class EnhancedDebtDashboard {
@@ -29,6 +29,7 @@ class EnhancedDebtDashboard {
 
   async init() {
     this.setupEventListeners();
+    this.setupShareFunctionality(); // New method for share features
     this.showLoading();
     
     try {
@@ -37,6 +38,7 @@ class EnhancedDebtDashboard {
       this.filterDataForPeriod(); // Initialize this.data BEFORE rendering
       this.renderDashboard();
       this.setupRealTimeCounter();
+      this.trackPageView(); // SEO analytics
     } catch (error) {
       console.error('Dashboard initialization failed:', error);
       this.handleError(error);
@@ -613,6 +615,8 @@ class EnhancedDebtDashboard {
     if (mobileToggle && navLinks) {
       mobileToggle.addEventListener('click', () => {
         navLinks.classList.toggle('is-open');
+        const isOpen = navLinks.classList.contains('is-open');
+        mobileToggle.setAttribute('aria-expanded', isOpen.toString());
       });
     }
     
@@ -621,6 +625,13 @@ class EnhancedDebtDashboard {
     if (themeToggle) {
       themeToggle.addEventListener('click', () => {
           document.body.classList.toggle('dark-theme');
+          // Update icon based on theme
+          const icon = themeToggle.querySelector('i');
+          if (document.body.classList.contains('dark-theme')) {
+            icon.className = 'fas fa-sun';
+          } else {
+            icon.className = 'fas fa-moon';
+          }
           // Redraw charts with correct colors
           Object.values(this.charts).forEach(chart => chart.destroy());
           this.renderCharts();
@@ -634,8 +645,12 @@ class EnhancedDebtDashboard {
           if (e.target.matches('.time-btn')) {
               this.currentPeriod = e.target.dataset.period;
               const activeBtn = document.querySelector('.time-btn.active');
-              if (activeBtn) activeBtn.classList.remove('active');
+              if (activeBtn) {
+                activeBtn.classList.remove('active');
+                activeBtn.setAttribute('aria-pressed', 'false');
+              }
               e.target.classList.add('active');
+              e.target.setAttribute('aria-pressed', 'true');
               this.filterDataForPeriod();
               this.updateMainChart();
           }
@@ -648,8 +663,12 @@ class EnhancedDebtDashboard {
       chartControls.addEventListener('click', (e) => {
           if (e.target.matches('.chart-toggle')) {
               const activeToggle = document.querySelector('.chart-toggle.active');
-              if (activeToggle) activeToggle.classList.remove('active');
+              if (activeToggle) {
+                activeToggle.classList.remove('active');
+                activeToggle.setAttribute('aria-pressed', 'false');
+              }
               e.target.classList.add('active');
+              e.target.setAttribute('aria-pressed', 'true');
               this.updateMainChart();
           }
       });
@@ -661,6 +680,122 @@ class EnhancedDebtDashboard {
       fab.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
+    }
+
+    // Export functionality
+    const exportCsv = document.getElementById('export-csv');
+    const exportPdf = document.getElementById('export-pdf');
+    if (exportCsv) {
+      exportCsv.addEventListener('click', () => this.exportToCSV());
+    }
+    if (exportPdf) {
+      exportPdf.addEventListener('click', () => this.exportToPDF());
+    }
+  }
+
+  // NEW: Share functionality setup
+  setupShareFunctionality() {
+    const shareBtn = document.getElementById('share-btn');
+    const shareBtnAlt = document.getElementById('share-btn-alt');
+    const shareModal = document.getElementById('share-modal');
+    const shareClose = document.getElementById('share-close');
+    const copyUrlBtn = document.getElementById('copy-url-btn');
+    const shareUrlInput = document.getElementById('share-url-input');
+    
+    const currentUrl = window.location.href;
+    const shareText = "Découvrez le tableau de bord interactif de la dette publique française avec analyses en temps réel ! 📊";
+    
+    // Update share URLs
+    if (shareUrlInput) {
+      shareUrlInput.value = currentUrl;
+    }
+    
+    const openShareModal = () => {
+      if (shareModal) {
+        shareModal.style.display = 'flex';
+        shareModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+    };
+    
+    const closeShareModal = () => {
+      if (shareModal) {
+        shareModal.style.display = 'none';
+        shareModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+    };
+    
+    // Event listeners for share buttons
+    shareBtn?.addEventListener('click', openShareModal);
+    shareBtnAlt?.addEventListener('click', openShareModal);
+    shareClose?.addEventListener('click', closeShareModal);
+    
+    // Close modal when clicking outside
+    shareModal?.addEventListener('click', (e) => {
+      if (e.target === shareModal) {
+        closeShareModal();
+      }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && shareModal?.style.display === 'flex') {
+        closeShareModal();
+      }
+    });
+    
+    // Copy URL functionality
+    copyUrlBtn?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(currentUrl);
+        copyUrlBtn.innerHTML = '<i class="fas fa-check"></i>';
+        setTimeout(() => {
+          copyUrlBtn.innerHTML = '<i class="fas fa-copy"></i>';
+        }, 2000);
+        this.trackEvent('share', 'copy_url');
+      } catch (err) {
+        // Fallback for older browsers
+        if (shareUrlInput) {
+          shareUrlInput.select();
+          shareUrlInput.setSelectionRange(0, 99999); // For mobile devices
+          document.execCommand('copy');
+          copyUrlBtn.innerHTML = '<i class="fas fa-check"></i>';
+          setTimeout(() => {
+            copyUrlBtn.innerHTML = '<i class="fas fa-copy"></i>';
+          }, 2000);
+        }
+      }
+    });
+    
+    // Social media share links
+    this.setupSocialShareLinks(currentUrl, shareText);
+  }
+
+  setupSocialShareLinks(url, text) {
+    const twitterShare = document.getElementById('share-twitter');
+    const linkedinShare = document.getElementById('share-linkedin');
+    const facebookShare = document.getElementById('share-facebook');
+    const telegramShare = document.getElementById('share-telegram');
+    
+    if (twitterShare) {
+      twitterShare.href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}&via=AIFR_AI`;
+      twitterShare.addEventListener('click', () => this.trackEvent('share', 'twitter'));
+    }
+    
+    if (linkedinShare) {
+      linkedinShare.href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+      linkedinShare.addEventListener('click', () => this.trackEvent('share', 'linkedin'));
+    }
+    
+    if (facebookShare) {
+      facebookShare.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+      facebookShare.addEventListener('click', () => this.trackEvent('share', 'facebook'));
+    }
+    
+    if (telegramShare) {
+      telegramShare.href = `https://telegram.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+      telegramShare.addEventListener('click', () => this.trackEvent('share', 'telegram'));
     }
   }
 
@@ -679,6 +814,86 @@ class EnhancedDebtDashboard {
     animatedElements.forEach(el => observer.observe(el));
   }
 
+  // NEW: Export functionality
+  exportToCSV() {
+    try {
+      const csvData = this.generateCSVData();
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `dette-publique-france-${new Date().getFullYear()}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      this.trackEvent('export', 'csv');
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+    }
+  }
+
+  exportToPDF() {
+    // Simple PDF export using window.print()
+    // For a more advanced PDF export, you would integrate with a library like jsPDF
+    try {
+      window.print();
+      this.trackEvent('export', 'pdf');
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+    }
+  }
+
+  generateCSVData() {
+    const headers = ['Année', 'Dette (Md€)', '% PIB', 'Par habitant (€)', 'Variation annuelle (%)', 'Taux moyen (%)', 'Charge intérêts (Md€)'];
+    const debtData = this.fullData.debt || [];
+    const gdpData = this.fullData.gdp || [];
+    const perCapData = this.fullData.perCapita || [];
+    
+    const rows = debtData.map(debt => {
+      const gdpEntry = gdpData.find(g => g.year === debt.year);
+      const perCapEntry = perCapData.find(p => p.year === debt.year);
+      const prevDebt = debtData.find(d => d.year === debt.year - 1);
+      const variation = prevDebt ? ((debt.value - prevDebt.value) / prevDebt.value * 100) : 0;
+      
+      return [
+        debt.year,
+        (debt.value / 1000).toFixed(1),
+        gdpEntry ? gdpEntry.value.toFixed(1) : 'N/A',
+        perCapEntry ? Math.round(perCapEntry.value) : 'N/A',
+        variation.toFixed(1),
+        '2.8',
+        (debt.value * 0.028 / 1000).toFixed(1)
+      ];
+    });
+    
+    return [headers, ...rows].map(row => row.join(',')).join('\n');
+  }
+
+  // NEW: Analytics and tracking
+  trackPageView() {
+    // Simple analytics tracking - you can integrate with Google Analytics, Plausible, etc.
+    if (typeof gtag !== 'undefined') {
+      gtag('config', 'GA_TRACKING_ID', {
+        page_title: 'Dette Publique Française - Tableau de Bord',
+        page_location: window.location.href
+      });
+    }
+  }
+
+  trackEvent(action, category, label = '') {
+    // Event tracking for analytics
+    if (typeof gtag !== 'undefined') {
+      gtag('event', action, {
+        event_category: category,
+        event_label: label,
+        custom_map: { metric1: 'dashboard_interaction' }
+      });
+    }
+    // Console log for development
+    console.log(`Event tracked: ${action} - ${category}${label ? ' - ' + label : ''}`);
+  }
+
   handleError(error) { 
     console.error('Dashboard Error:', error);
     const errorContainer = document.createElement('div');
@@ -686,6 +901,10 @@ class EnhancedDebtDashboard {
       <div style="background: #fee; border: 1px solid #fcc; padding: 1rem; margin: 1rem; border-radius: 0.5rem;">
         <h3>Erreur de chargement</h3>
         <p>Une erreur s'est produite lors du chargement des données. Utilisation des données de démonstration.</p>
+        <details style="margin-top: 0.5rem;">
+          <summary>Détails techniques</summary>
+          <pre style="margin-top: 0.5rem; font-size: 0.8rem;">${error.message || error}</pre>
+        </details>
       </div>
     `;
     const main = document.querySelector('main');

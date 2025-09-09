@@ -1,5 +1,5 @@
 /* ===================================================================
-   ENHANCED STYLE V3: Developer Guru Edition
+   ENHANCED STYLE V3: Developer Guru Edition + SEO & Share Features
    =================================================================== */
 
 /*--------------------------------------------------------------
@@ -17,6 +17,7 @@
   --text-dark: #1e293b;
   --text-muted: #64748b;
   --text-light: #fff;
+  --border-color: #e2e8f0;
   --font-heading: 'Poppins', sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
   --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
@@ -79,7 +80,7 @@ a:focus-visible, button:focus-visible {
 }
 
 /*--------------------------------------------------------------
-3. Enhanced Navigation
+3. Enhanced Navigation + New Buttons
 --------------------------------------------------------------*/
 .nav-container {
   position: fixed; top: 0; left: 0; width: 100%;
@@ -132,20 +133,197 @@ body.dark-theme .nav-container {
   width: 100%; 
 }
 
-.theme-toggle {
-  background: none; border: none; font-size: 1.2rem;
-  color: var(--text-dark); cursor: pointer;
-  padding: 8px; border-radius: 50%;
+/* Enhanced buttons for navigation */
+.theme-toggle, .share-btn, .github-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--text-dark);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
   transition: all var(--transition-speed) ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.theme-toggle:hover, .share-btn:hover, .github-btn:hover {
+  background-color: var(--bg-light);
+  transform: scale(1.1);
+}
+
+.github-btn {
+  color: var(--primary-color);
+}
+
+.share-btn:hover {
+  color: var(--secondary-color);
 }
 
 .theme-toggle:hover {
-  background-color: var(--bg-light);
-  transform: rotate(15deg);
+  transform: rotate(15deg) scale(1.1);
+}
+
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--text-dark);
+  cursor: pointer;
+  padding: 8px;
 }
 
 /*--------------------------------------------------------------
-4. Enhanced Hero Section
+4. Share Modal Styles
+--------------------------------------------------------------*/
+.share-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.share-modal-content {
+  background: var(--bg-card);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: var(--shadow-lg);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.share-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.share-header h3 {
+  margin: 0;
+  color: var(--primary-color);
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+.share-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: 4px;
+  transition: all var(--transition-speed) ease;
+}
+
+.share-close:hover {
+  color: var(--text-dark);
+  background: var(--bg-light);
+}
+
+.share-url {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.share-url input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  background: var(--bg-light);
+  color: var(--text-dark);
+  font-family: var(--font-body);
+}
+
+.copy-btn {
+  padding: 0.75rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  min-width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-btn:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.share-social {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all var(--transition-speed) ease;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.social-btn.twitter {
+  background: #1DA1F2;
+  color: white;
+}
+
+.social-btn.linkedin {
+  background: #0077B5;
+  color: white;
+}
+
+.social-btn.facebook {
+  background: #1877F2;
+  color: white;
+}
+
+.social-btn.telegram {
+  background: #0088CC;
+  color: white;
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/*--------------------------------------------------------------
+5. Enhanced Hero Section with Attribution
 --------------------------------------------------------------*/
 .hero {
   padding: 120px 2rem 140px; text-align: center;
@@ -204,6 +382,66 @@ body.dark-theme .nav-container {
 }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
+/* New Attribution Section */
+.hero-attribution {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+}
+
+.attribution-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all var(--transition-speed) ease;
+  font-weight: 500;
+}
+
+.attribution-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  color: var(--text-light);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.attribution-link.github {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.attribution-link.github:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.attribution-link.aifr:hover {
+  background: rgba(225, 0, 15, 0.2);
+}
+
+.attribution-link i {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.attribution-link.github i {
+  font-size: 1.2rem;
+}
+
+.attribution-divider {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
+}
+
 .wave {
   position: absolute; bottom: -1px; left: 0; width: 100%; height: 100px;
 }
@@ -213,7 +451,7 @@ body.dark-theme .nav-container {
 }
 
 /*--------------------------------------------------------------
-5. Enhanced Dashboard Layout
+6. Enhanced Dashboard Layout
 --------------------------------------------------------------*/
 main.dashboard { margin: -100px auto 4rem auto; z-index: 10; position: relative; }
 .quick-actions {
@@ -237,7 +475,7 @@ main.dashboard { margin: -100px auto 4rem auto; z-index: 10; position: relative;
 .export-btn:hover { background: #005a9e; transform: translateY(-2px); }
 
 /*--------------------------------------------------------------
-6. Enhanced Statistics Cards
+7. Enhanced Statistics Cards
 --------------------------------------------------------------*/
 .stats-container {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -268,7 +506,7 @@ main.dashboard { margin: -100px auto 4rem auto; z-index: 10; position: relative;
 .stat-sub { font-size: .85rem; color: var(--text-muted); margin-top: 4px; }
 
 /*--------------------------------------------------------------
-7. Enhanced Charts Section & Data Table
+8. Enhanced Charts Section & Data Table
 --------------------------------------------------------------*/
 .chart-grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(450px, 100%), 1fr));
@@ -305,7 +543,7 @@ body.dark-theme .data-table tr:hover { background-color: #2c3a52; }
 .data-table .number { text-align: right; font-family: var(--font-heading); font-weight: 500; }
 
 /*--------------------------------------------------------------
-8. Other Sections (Comparison, About)
+9. Other Sections (Comparison, About)
 --------------------------------------------------------------*/
 .comparison-section { background: var(--bg-card); border-radius: var(--border-radius); padding: 2rem; margin: 2rem 0; box-shadow: var(--shadow-sm); }
 .comparison-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
@@ -320,7 +558,7 @@ body.dark-theme .data-table tr:hover { background-color: #2c3a52; }
 .country-rank { font-size: 0.8rem; color: var(--text-muted); }
 
 /*--------------------------------------------------------------
-9. Loading & Animations
+10. Loading & Animations
 --------------------------------------------------------------*/
 .fade-in-up { opacity: 0; transform: translateY(30px); animation: fadeInUp 0.8s ease-out forwards; }
 @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
@@ -346,7 +584,7 @@ body.dark-theme .skeleton { background: linear-gradient(90deg, #2c3a52 25%, #334
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /*--------------------------------------------------------------
-10. Footer & FAB
+11. Footer & FAB
 --------------------------------------------------------------*/
 .site-footer {
   background: #1e293b; color: #e2e8f0;
@@ -371,7 +609,25 @@ body.dark-theme .site-footer { background: #0b1120; }
 .fab:hover { transform: scale(1.1); }
 
 /*--------------------------------------------------------------
-11. Responsive Design
+12. Dark Theme Support for New Elements
+--------------------------------------------------------------*/
+body.dark-theme .share-modal-content {
+  background: var(--bg-card);
+  color: var(--text-dark);
+}
+
+body.dark-theme .share-url input {
+  background: var(--bg-light);
+  color: var(--text-dark);
+  border-color: var(--border-color);
+}
+
+body.dark-theme .share-close:hover {
+  background: var(--bg-light);
+}
+
+/*--------------------------------------------------------------
+13. Responsive Design
 --------------------------------------------------------------*/
 @media (max-width: 768px) {
   .container { padding: 0 1rem; }
@@ -388,4 +644,34 @@ body.dark-theme .site-footer { background: #0b1120; }
     box-shadow: -5px 0 15px rgba(0,0,0,0.1);
   }
   .nav-links.is-open { transform: translateX(0); }
+
+  /* Share modal mobile optimization */
+  .share-modal-content {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .share-social {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-attribution {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .attribution-link {
+    padding: 0.75rem 1.5rem;
+  }
+
+  /* Navigation buttons mobile spacing */
+  .navbar > div {
+    gap: 0.5rem !important;
+  }
+
+  .theme-toggle, .share-btn, .github-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
 }
