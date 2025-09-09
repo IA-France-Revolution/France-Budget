@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>La Dette Française — Tableau de Bord Économique Avancé</title>
+<meta name="description" content="Tableau de bord économique interactif avancé pour suivre la dette publique française, les comparaisons européennes, et les indicateurs économiques clés en temps réel." />
+
+<!-- Preconnects & Fonts -->
+<link rel="preconnect" href="https://ec.europa.eu" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- External Stylesheet -->
+<link rel="stylesheet" href="style.css">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
+<!-- External JavaScript -->
+<script src="script.js" defer></script>
+
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Navigation -->
+  <header class="nav-container" id="nav-container">
+    <nav class="navbar container">
+      <a href="#" class="logo" aria-label="Dette FR - Accueil">
+        <i class="fas fa-chart-line" aria-hidden="true"></i> 
+        Dette FR Pro
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#stats-summary" class="active">Indicateurs</a></li>
+        <li><a href="#charts-section">Graphiques</a></li>
+        <li><a href="#comparison-section">Comparaisons EU</a></li>
+        <li><a href="#economic-indicators">Économie</a></li>
+        <li><a href="#data-table">Données</a></li>
+        <li><a href="#about">À Propos</a></li>
+      </ul>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Changer de thème">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-controls="nav-links" aria-expanded="false">
+          <span class="sr-only">Ouvrir le menu</span>
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Enhanced Hero Section -->
+    <section class="hero">
+      <div class="hero-background"></div>
+      <div class="hero-content">
+        <p class="hero-kicker">Dette publique de la France • Analyse en temps réel</p>
+        <div id="debt-main" class="hero-title skeleton" style="min-height: 1.2em; width: 80%; margin: 0 auto 20px;"></div>
+        <div class="hero-subtitle">
+          <span id="debt-description">Suivi interactif de la dette publique française avec analyses comparatives européennes et indicateurs économiques avancés</span>
+        </div>
+        
+        <div class="hero-stats-grid">
+          <div class="hero-stat fade-in-up" style="--stagger-index: 1;">
+            <div class="hero-stat-value" id="hero-pcgdp">---%</div>
+            <div class="hero-stat-label">du PIB</div>
+          </div>
+          <div class="hero-stat fade-in-up" style="--stagger-index: 2;">
+            <div class="hero-stat-value" id="hero-percap">--- €</div>
+            <div class="hero-stat-label">par habitant</div>
+          </div>
+          <div class="hero-stat fade-in-up" style="--stagger-index: 3;">
+            <div class="hero-stat-value" id="hero-ranking">#--</div>
+            <div class="hero-stat-label">rang EU</div>
+          </div>
+        </div>
+        
+        <div id="asof-badge" class="hero-badge">
+          <span class="dot" aria-hidden="true"></span>
+          <span data-slot="asof">Chargement des données...</span>
+        </div>
+      </div>
+      <div class="wave"></div>
+    </section>
+
+    <!-- Enhanced Dashboard -->
+    <div class="dashboard container">
+      <!-- Quick Actions Bar -->
+      <div class="quick-actions">
+        <div class="time-selector">
+          <button class="time-btn active" data-period="5Y">5 ans</button>
+          <button class="time-btn" data-period="10Y">10 ans</button>
+          <button class="time-btn" data-period="20Y">20 ans</button>
+          <button class="time-btn" data-period="ALL">Tout</button>
+        </div>
+        <div class="export-actions">
+          <button class="export-btn" id="export-csv">
+            <i class="fas fa-download"></i> CSV
+          </button>
+          <button class="export-btn" id="export-pdf">
+            <i class="fas fa-file-pdf"></i> PDF
+          </button>
+          <button class="export-btn" id="share-btn">
+            <i class="fas fa-share"></i> Partager
+          </button>
+        </div>
+      </div>
+
+      <!-- Enhanced Key Indicators -->
+      <section id="stats-summary" class="stats-container" aria-labelledby="stats-title">
+        <h2 id="stats-title" class="sr-only">Indicateurs Clés</h2>
+        
+        <div class="stat-card fade-in-up" style="--stagger-index: 1;">
+          <h3><i class="fas fa-percentage"></i> Ratio Dette/PIB</h3>
+          <div id="kpi-pcgdp" class="stat-value skeleton"></div>
+          <div class="stat-trend" id="pcgdp-trend"></div>
+          <div class="stat-sub">Dernier pointage Eurostat</div>
+        </div>
+        
+        <div class="stat-card fade-in-up" style="--stagger-index: 2;">
+          <h3><i class="fas fa-users"></i> Dette par habitant</h3>
+          <div id="kpi-percap" class="stat-value skeleton"></div>
+          <div class="stat-trend" id="percap-trend"></div>
+          <div id="pop-hint" class="stat-sub">&nbsp;</div>
+        </div>
+        
+        <div class="stat-card fade-in-up" style="--stagger-index: 3;">
+          <h3><i class="fas fa-chart-line"></i> Évolution Annuelle</h3>
+          <div id="kpi-yoy" class="stat-value skeleton"></div>
+          <div class="stat-trend" id="yoy-trend"></div>
+          <div class="stat-sub">Variation sur 12 mois</div>
+        </div>
+        
+        <div class="stat-card fade-in-up" style="--stagger-index: 4;">
+          <h3><i class="fas fa-clock"></i> Temps réel</h3>
+          <div id="kpi-realtime" class="stat-value">+0 €</div>
+          <div class="stat-trend">
+            <i class="fas fa-arrow-up trend-up"></i>
+            <span id="per-second">+0 €/sec</span>
+          </div>
+          <div class="stat-sub">Augmentation estimée</div>
+        </div>
+        
+        <div class="stat-card fade-in-up" style="--stagger-index: 5;">
+          <h3><i class="fas fa-euro-sign"></i> Charge d'intérêts</h3>
+          <div id="kpi-interest" class="stat-value skeleton"></div>
+          <div class="stat-trend" id="interest-trend"></div>
+          <div class="stat-sub">Annuelle estimée</div>
+        </div>
+        
+        <div class="stat-card fade-in-up" style="--stagger-index: 6;">
+          <h3><i class="fas fa-flag"></i> Rang européen</h3>
+          <div id="kpi-eu-rank" class="stat-value skeleton"></div>
+          <div class="stat-trend" id="rank-trend"></div>
+          <div class="stat-sub">Sur 27 pays UE</div>
+        </div>
+      </section>
+
+      <!-- Enhanced Charts Section -->
+      <section id="charts-section" class="chart-grid" aria-labelledby="charts-title">
+        <h2 id="charts-title" class="sr-only">Graphiques détaillés</h2>
+        
+        <!-- Main Debt Evolution Chart -->
+        <div class="chart-container chart-full-width fade-in-up" style="--stagger-index: 7;">
+          <h2><i class="fas fa-chart-area"></i> Évolution de la dette publique française</h2>
+          <div class="chart-controls">
+            <button class="chart-toggle active" data-chart="debtEvolution" data-type="amount">Montant (Md€)</button>
+            <button class="chart-toggle" data-chart="debtEvolution" data-type="gdp">% du PIB</button>
+            <button class="chart-toggle" data-chart="debtEvolution" data-type="percap">Par habitant</button>
+          </div>
+          <div class="chart-box">
+            <canvas id="chart-debt-evolution" role="img" aria-label="Graphique d'évolution de la dette publique"></canvas>
+          </div>
+          <p class="chart-note" id="debt-evolution-note"></p>
+        </div>
+        
+        <!-- European Comparison Chart -->
+        <div class="chart-container fade-in-up" style="--stagger-index: 8;">
+          <h2><i class="fas fa-globe-europe"></i> Comparaison européenne (% PIB)</h2>
+          <div class="chart-box">
+            <canvas id="chart-eu-comparison" role="img" aria-label="Graphique de comparaison européenne"></canvas>
+          </div>
+          <p class="chart-note">Données 2024 - Zone Euro et principaux pays UE</p>
+        </div>
+        
+        <!-- Debt Composition -->
+        <div class="chart-container fade-in-up" style="--stagger-index: 9;">
+          <h2><i class="fas fa-pie-chart"></i> Composition de la dette</h2>
+          <div class="chart-box">
+            <canvas id="chart-composition" role="img" aria-label="Graphique de composition de la dette"></canvas>
+          </div>
+          <p class="chart-note">Répartition par échéance et instrument financier</p>
+        </div>
+        
+        <!-- Interest Rates Trend -->
+        <div class="chart-container fade-in-up" style="--stagger-index: 10;">
+          <h2><i class="fas fa-percentage"></i> Taux d'intérêt OAT 10 ans</h2>
+          <div class="chart-box">
+            <canvas id="chart-interest-rates" role="img" aria-label="Graphique des taux d'intérêt"></canvas>
+          </div>
+          <p class="chart-note">Évolution des taux souverains français</p>
+        </div>
+      </section>
+
+      <!-- European Comparison Section -->
+      <section id="comparison-section" class="comparison-section fade-in-up" style="--stagger-index: 11;">
+        <h2><i class="fas fa-balance-scale"></i> Comparaison européenne - Dette/PIB 2024</h2>
+        <div class="comparison-grid" id="eu-comparison-grid">
+          <!-- Countries will be populated by JavaScript -->
+        </div>
+      </section>
+
+      <!-- Economic Indicators Section -->
+      <section id="economic-indicators" class="chart-grid">
+        <div class="chart-container fade-in-up" style="--stagger-index: 12;">
+          <h2><i class="fas fa-chart-line"></i> PIB & Croissance</h2>
+          <div class="chart-box">
+            <canvas id="chart-gdp" role="img" aria-label="Graphique du PIB et croissance"></canvas>
+          </div>
+          <p class="chart-note">Évolution du PIB français et taux de croissance</p>
+        </div>
+        
+        <div class="chart-container fade-in-up" style="--stagger-index: 13;">
+          <h2><i class="fas fa-fire"></i> Inflation & Déflateur PIB</h2>
+          <div class="chart-box">
+            <canvas id="chart-inflation" role="img" aria-label="Graphique de l'inflation"></canvas>
+          </div>
+          <p class="chart-note">Indices des prix et déflateur du PIB</p>
+        </div>
+        
+        <div class="chart-container fade-in-up" style="--stagger-index: 14;">
+          <h2><i class="fas fa-briefcase"></i> Emploi & Chômage</h2>
+          <div class="chart-box">
+            <canvas id="chart-employment" role="img" aria-label="Graphique de l'emploi"></canvas>
+          </div>
+          <p class="chart-note">Taux de chômage et population active</p>
+        </div>
+        
+        <div class="chart-container fade-in-up" style="--stagger-index: 15;">
+          <h2><i class="fas fa-university"></i> Solde budgétaire</h2>
+          <div class="chart-box">
+            <canvas id="chart-budget" role="img" aria-label="Graphique du solde budgétaire"></canvas>
+          </div>
+          <p class="chart-note">Déficit/excédent public en % du PIB</p>
+        </div>
+      </section>
+
+      <!-- Data Table Section -->
+      <section id="data-table" class="data-table-section fade-in-up" style="--stagger-index: 16;">
+        <h2><i class="fas fa-table"></i> Données historiques détaillées</h2>
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Année</th>
+                <th class="number">Dette (Md€)</th>
+                <th class="number">% PIB</th>
+                <th class="number">Par habitant</th>
+                <th class="number">Variation annuelle</th>
+                <th class="number">Taux moyen</th>
+                <th class="number">Charge d'intérêts</th>
+              </tr>
+            </thead>
+            <tbody id="data-table-body">
+              <!-- Data will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- About Section -->
+      <section id="about" class="comparison-section fade-in-up" style="--stagger-index: 17;">
+        <h2><i class="fas fa-info-circle"></i> À propos & Sources</h2>
+        <p style="text-align: center; margin-bottom: 2rem;">
+          Tableau de bord économique avancé développé pour offrir une analyse complète et interactive de la dette publique française dans son contexte européen et économique.
+        </p>
+        
+        <div class="comparison-grid">
+          <div class="country-card">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">📊</div>
+            <h3>Sources officielles</h3>
+            <p>Eurostat, INSEE, Banque de France, Agence France Trésor</p>
+          </div>
+          <div class="country-card">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">🔄</div>
+            <h3>Mise à jour</h3>
+            <p>Données actualisées automatiquement selon les publications officielles</p>
+          </div>
+          <div class="country-card">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">⚡</div>
+            <h3>Temps réel</h3>
+            <p>Estimations en temps réel basées sur les tendances historiques</p>
+          </div>
+          <div class="country-card">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">🇪🇺</div>
+            <h3>Contexte européen</h3>
+            <p>Comparaisons avec les 27 pays membres de l'Union européenne</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Enhanced Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h3>Dette FR Pro</h3>
+          <p>Tableau de bord économique avancé pour le suivi de la dette publique française.</p>
+          <div style="margin-top: 1rem;">
+            <a href="#" style="margin-right: 1rem;"><i class="fab fa-github"></i></a>
+            <a href="#" style="margin-right: 1rem;"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h3>Données & Sources</h3>
+          <ul>
+            <li><a href="https://ec.europa.eu/eurostat" target="_blank">Eurostat</a></li>
+            <li><a href="https://www.insee.fr" target="_blank">INSEE</a></li>
+            <li><a href="https://www.banque-france.fr" target="_blank">Banque de France</a></li>
+            <li><a href="https://www.aft.gouv.fr" target="_blank">Agence France Trésor</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Fonctionnalités</h3>
+          <ul>
+            <li><a href="#stats-summary">Indicateurs clés</a></li>
+            <li><a href="#charts-section">Graphiques interactifs</a></li>
+            <li><a href="#comparison-section">Comparaisons UE</a></li>
+            <li><a href="#economic-indicators">Contexte économique</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Outils</h3>
+          <ul>
+            <li><a href="#" id="footer-export-csv">Exporter CSV</a></li>
+            <li><a href="#" id="footer-export-pdf">Exporter PDF</a></li>
+            <li><a href="#" id="footer-api">API Documentation</a></li>
+            <li><a href="#" id="footer-embed">Widget intégrable</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Dette FR Pro. Développé avec passion. Données sous licence ouverte.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Action Button -->
+  <button class="fab" id="fab" aria-label="Retour en haut">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+</body>
+</html>
